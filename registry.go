@@ -10,6 +10,11 @@ var (
 		Value: "",
 		Usage: "Private/Public key string (xprv/xpub)",
 	}
+	netFlag = cli.StringFlag{
+		Name:  "net, n",
+		Value: "",
+		Usage: "Network (mainnet/testnet/regtest/simnet)",
+	}
 	pathFlag = cli.StringFlag{
 		Name:  "path, p",
 		Value: "0",
@@ -28,17 +33,17 @@ var (
 
 	commands = []cli.Command{
 		{
-			Name: "seed2key",
-			// Aliases:     []string{"bal"},
+			Name:        "keyFromSeed",
+			Aliases:     []string{"key"},
 			Usage:       "Get extended xprv key from seed",
 			UsageText:   "btcutil seed2key [options]",
 			Description: "Get the extended private key from a given seed.",
-			Action:      seed2key,
+			Action:      keyFromSeed,
 			Flags:       []cli.Flag{passPhraseFlag, seedFlag},
 		},
 		{
-			Name: "derive",
-			// Aliases:     []string{"bal"},
+			Name:        "deriveFromKey",
+			Aliases:     []string{"derive"},
 			Usage:       "Derive child key",
 			UsageText:   "btcutil derive [options]",
 			Description: "Derive the extended private key from a given key.",

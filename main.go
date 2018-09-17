@@ -5,6 +5,7 @@ import (
 	"os"
 	"sort"
 
+	"github.com/btcsuite/btcd/chaincfg"
 	"github.com/spf13/viper"
 	"github.com/urfave/cli"
 )
@@ -12,6 +13,8 @@ import (
 const (
 	DEFAULT_NODEURI = "http://localhost:8332"
 )
+
+var Network *chaincfg.Params
 
 func main() {
 
@@ -36,7 +39,7 @@ func main() {
 	app.UsageText = "btcutil <command> [options]"
 	app.Version = "0.0.1"
 
-	app.Flags = []cli.Flag{}
+	app.Flags = []cli.Flag{netFlag}
 	app.Before = beforeApp
 	app.Commands = commands
 
@@ -47,5 +50,16 @@ func main() {
 }
 
 func beforeApp(c *cli.Context) error {
+	switch net := c.String("net"); net {
+	case "testnet":
+		Network = &chaincfg.TestNet3Params
+	case "regtest":
+		Network = &chaincfg.RegressionNetParams
+	case "simnet":
+		Network = &chaincfg.SimNetParams
+	default:
+		Network = &chaincfg.MainNetParams
+	}
+
 	return nil
 }

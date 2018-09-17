@@ -21,10 +21,12 @@ run:
 deps:
 		$(GOGET) github.com/spf13/viper
 		$(GOGET) github.com/urfave/cli
-		$(GOGET) github.com/WeMeetAgain/go-hdwallet
+		$(GOGET) github.com/tyler-smith/go-bip39
+		$(GOGET) github.com/btcsuite/btcd/chaincfg
+		$(GOGET) github.com/btcsuite/btcutil/hdkeychain
 
 # $(GOGET) github.com/tyler-smith/go-bip32
-# $(GOGET) github.com/tyler-smith/go-bip39
+# $(GOGET) github.com/WeMeetAgain/go-hdwallet
 
 # Cross compilation
 # build-linux:
