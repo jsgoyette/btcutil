@@ -1,0 +1,5 @@
+# Bitcoin RPC node connection info
+rpc:
+   url: http://localhost:8545
+   user: bob
+   pass: 123456
