@@ -9,6 +9,7 @@ import (
 	"github.com/tyler-smith/go-bip39"
 	"github.com/urfave/cli"
 
+	"github.com/btcsuite/btcd/txscript"
 	"github.com/btcsuite/btcutil"
 	"github.com/btcsuite/btcutil/hdkeychain"
 )
@@ -37,7 +38,7 @@ func keyFromSeed(c *cli.Context) error {
 	// masterKey, _ := bip32.NewMasterKey(seed)
 	// publicKey := masterKey.PublicKey()
 
-	finalKey := &Key{masterKey.String(), publicKey.String(), "", "", ""}
+	finalKey := &Key{masterKey.String(), publicKey.String()}
 
 	final, err := json.Marshal(finalKey)
 	if err != nil {
@@ -82,7 +83,7 @@ func derive(c *cli.Context) error {
 		return cli.NewExitError(err.Error(), 1)
 	}
 
-	address, err := derivedKey.Address(Network)
+	p2pkhAddress, err := derivedKey.Address(Network)
 	if err != nil {
 		return cli.NewExitError(err.Error(), 1)
 	}
@@ -102,12 +103,35 @@ func derive(c *cli.Context) error {
 		return cli.NewExitError(err.Error(), 1)
 	}
 
-	finalKey := &Key{
+	keyHash := btcutil.Hash160(ecPubKey.SerializeCompressed())
+
+	scriptSig, err := txscript.NewScriptBuilder().AddOp(txscript.OP_0).AddData(keyHash).Script()
+	if err != nil {
+		return cli.NewExitError(err.Error(), 1)
+	}
+
+	p2shAddress, err := btcutil.NewAddressScriptHash(scriptSig, Network)
+	if err != nil {
+		return cli.NewExitError(err.Error(), 1)
+	}
+
+	witnessProgram := btcutil.Hash160(wif.SerializePubKey())
+
+	bech32Address, err := btcutil.NewAddressWitnessPubKeyHash(witnessProgram, Network)
+	if err != nil {
+		return cli.NewExitError(err.Error(), 1)
+	}
+
+	finalKey := &FullKey{
 		derivedKey.String(),
 		publicKey.String(),
 		wif.String(),
 		hex.EncodeToString(ecPubKey.SerializeCompressed()),
-		address.String(),
+		p2pkhAddress.String(),
+		p2shAddress.String(),
+		hex.EncodeToString(scriptSig),
+		bech32Address.String(),
+		hex.EncodeToString(witnessProgram),
 	}
 
 	final, err := json.Marshal(finalKey)

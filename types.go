@@ -3,7 +3,16 @@ package main
 type Key struct {
 	PrivateKey string
 	PublicKey  string
-	ECPrivKey  string
-	ECPubKey   string
-	Address    string
+}
+
+type FullKey struct {
+	PrivateKey     string
+	PublicKey      string
+	WIF            string
+	ECPubKey       string
+	P2PKHAddress   string
+	P2SHAddress    string
+	P2SHScript     string
+	Bech32Address  string
+	WitnessProgram string
 }
