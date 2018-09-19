@@ -35,17 +35,14 @@ func keyFromSeed(c *cli.Context) error {
 		return cli.NewExitError(err.Error(), 1)
 	}
 
-	// masterKey, _ := bip32.NewMasterKey(seed)
-	// publicKey := masterKey.PublicKey()
+	final := &Key{masterKey.String(), publicKey.String()}
 
-	finalKey := &Key{masterKey.String(), publicKey.String()}
-
-	final, err := json.Marshal(finalKey)
+	finalStr, err := json.Marshal(final)
 	if err != nil {
 		return cli.NewExitError(err.Error(), 1)
 	}
 
-	fmt.Printf("%s\n", final)
+	fmt.Printf("%s\n", finalStr)
 
 	return nil
 }
@@ -122,7 +119,7 @@ func derive(c *cli.Context) error {
 		return cli.NewExitError(err.Error(), 1)
 	}
 
-	finalKey := &FullKey{
+	final := &FullKey{
 		derivedKey.String(),
 		publicKey.String(),
 		wif.String(),
@@ -134,12 +131,12 @@ func derive(c *cli.Context) error {
 		hex.EncodeToString(witnessProgram),
 	}
 
-	final, err := json.Marshal(finalKey)
+	finalStr, err := json.Marshal(final)
 	if err != nil {
 		return cli.NewExitError(err.Error(), 1)
 	}
 
-	fmt.Printf("%s\n", final)
+	fmt.Printf("%s\n", finalStr)
 
 	return nil
 }
@@ -149,7 +146,7 @@ func hash160(c *cli.Context) error {
 	hexStr := c.String("hex")
 
 	if hexStr == "" {
-		return cli.NewExitError("No hex provided", 1)
+		return cli.NewExitError("No hex string provided", 1)
 	}
 
 	decoded, err := hex.DecodeString(hexStr)
