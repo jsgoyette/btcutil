@@ -23,7 +23,8 @@ deps:
 		$(GOGET) github.com/urfave/cli
 		$(GOGET) github.com/tyler-smith/go-bip39
 		$(GOGET) github.com/btcsuite/btcd/chaincfg
-		$(GOGET) github.com/btcsuite/btcutil/hdkeychain
+		$(GOGET) github.com/btcsuite/btcutil
+		$(GOGET) github.com/btcsuite/btclog
 
 # $(GOGET) github.com/tyler-smith/go-bip32
 # $(GOGET) github.com/WeMeetAgain/go-hdwallet

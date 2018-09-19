@@ -143,3 +143,23 @@ func derive(c *cli.Context) error {
 
 	return nil
 }
+
+func hash160(c *cli.Context) error {
+
+	hexStr := c.String("hex")
+
+	if hexStr == "" {
+		return cli.NewExitError("No hex provided", 1)
+	}
+
+	decoded, err := hex.DecodeString(hexStr)
+	if err != nil {
+		return cli.NewExitError(err.Error(), 1)
+	}
+
+	hash := btcutil.Hash160(decoded)
+
+	fmt.Printf("%s\n", hex.EncodeToString(hash))
+
+	return nil
+}

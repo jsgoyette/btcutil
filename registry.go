@@ -5,6 +5,11 @@ import (
 )
 
 var (
+	hexFlag = cli.StringFlag{
+		Name:  "hex",
+		Value: "",
+		Usage: "Generic hex string",
+	}
 	keyFlag = cli.StringFlag{
 		Name:  "key, k",
 		Value: "",
@@ -49,6 +54,15 @@ var (
 			Description: "Derive the extended private key from a given key.",
 			Action:      derive,
 			Flags:       []cli.Flag{keyFlag, pathFlag},
+		},
+		{
+			Name: "hash160",
+			// Aliases:     []string{"hash"},
+			Usage:       "Generate hash160",
+			UsageText:   "btcutil hash160 [options]",
+			Description: "Generate the hash160 of a given hex string",
+			Action:      hash160,
+			Flags:       []cli.Flag{hexFlag},
 		},
 	}
 )
