@@ -35,7 +35,7 @@ func keyFromSeed(c *cli.Context) error {
 		return cli.NewExitError(err.Error(), 1)
 	}
 
-	final := &Key{masterKey.String(), publicKey.String()}
+	final := &Key{Network.Name, masterKey.String(), publicKey.String()}
 
 	finalStr, err := json.Marshal(final)
 	if err != nil {
@@ -85,16 +85,6 @@ func derive(c *cli.Context) error {
 		return cli.NewExitError(err.Error(), 1)
 	}
 
-	ecPrivKey, err := derivedKey.ECPrivKey()
-	if err != nil {
-		return cli.NewExitError(err.Error(), 1)
-	}
-
-	wif, err := btcutil.NewWIF(ecPrivKey, Network, true)
-	if err != nil {
-		return cli.NewExitError(err.Error(), 1)
-	}
-
 	ecPubKey, err := derivedKey.ECPubKey()
 	if err != nil {
 		return cli.NewExitError(err.Error(), 1)
@@ -112,28 +102,63 @@ func derive(c *cli.Context) error {
 		return cli.NewExitError(err.Error(), 1)
 	}
 
-	witnessProgram := btcutil.Hash160(wif.SerializePubKey())
+	witnessProgram := btcutil.Hash160(ecPubKey.SerializeCompressed())
 
 	bech32Address, err := btcutil.NewAddressWitnessPubKeyHash(witnessProgram, Network)
 	if err != nil {
 		return cli.NewExitError(err.Error(), 1)
 	}
 
-	final := &FullKey{
-		derivedKey.String(),
-		publicKey.String(),
-		wif.String(),
-		hex.EncodeToString(ecPubKey.SerializeCompressed()),
-		p2pkhAddress.String(),
-		p2shAddress.String(),
-		hex.EncodeToString(scriptSig),
-		bech32Address.String(),
-		hex.EncodeToString(witnessProgram),
-	}
+	var finalStr []byte
 
-	finalStr, err := json.Marshal(final)
-	if err != nil {
-		return cli.NewExitError(err.Error(), 1)
+	if masterKey.IsPrivate() {
+
+		// add private key and wif
+		ecPrivKey, err := derivedKey.ECPrivKey()
+		if err != nil {
+			return cli.NewExitError(err.Error(), 1)
+		}
+
+		wif, err := btcutil.NewWIF(ecPrivKey, Network, true)
+		if err != nil {
+			return cli.NewExitError(err.Error(), 1)
+		}
+
+		final := &DerivedPrivateKey{
+			Network.Name,
+			derivedKey.String(),
+			publicKey.String(),
+			wif.String(),
+			hex.EncodeToString(ecPubKey.SerializeCompressed()),
+			p2pkhAddress.String(),
+			p2shAddress.String(),
+			hex.EncodeToString(scriptSig),
+			bech32Address.String(),
+			hex.EncodeToString(witnessProgram),
+		}
+
+		finalStr, err = json.Marshal(final)
+		if err != nil {
+			return cli.NewExitError(err.Error(), 1)
+		}
+
+	} else {
+
+		final := &DerivedPublicKey{
+			Network.Name,
+			derivedKey.String(),
+			hex.EncodeToString(ecPubKey.SerializeCompressed()),
+			p2pkhAddress.String(),
+			p2shAddress.String(),
+			hex.EncodeToString(scriptSig),
+			bech32Address.String(),
+			hex.EncodeToString(witnessProgram),
+		}
+
+		finalStr, err = json.Marshal(final)
+		if err != nil {
+			return cli.NewExitError(err.Error(), 1)
+		}
 	}
 
 	fmt.Printf("%s\n", finalStr)
