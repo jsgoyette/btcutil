@@ -82,27 +82,28 @@ func derive(c *cli.Context) error {
 
 	y_prefix := PREFIX_ypub
 	z_prefix := PREFIX_zpub
+
 	if Network.Name != "mainnet" {
 		y_prefix = PREFIX_upub
 		z_prefix = PREFIX_vpub
 	}
 
-	yversion, err := hex.DecodeString(y_prefix)
+	y_version, err := hex.DecodeString(y_prefix)
 	if err != nil {
 		return cli.NewExitError(err.Error(), 1)
 	}
 
-	zversion, err := hex.DecodeString(z_prefix)
+	z_version, err := hex.DecodeString(z_prefix)
 	if err != nil {
 		return cli.NewExitError(err.Error(), 1)
 	}
 
-	derivedKeyY, err := NewKeyFromStringVersion(yversion, publicKey.String())
+	y_publicKey, err := NewKeyFromStringVersion(y_version, publicKey.String())
 	if err != nil {
 		return cli.NewExitError(err.Error(), 1)
 	}
 
-	derivedKeyZ, err := NewKeyFromStringVersion(zversion, publicKey.String())
+	z_publicKey, err := NewKeyFromStringVersion(z_version, publicKey.String())
 	if err != nil {
 		return cli.NewExitError(err.Error(), 1)
 	}
@@ -155,8 +156,8 @@ func derive(c *cli.Context) error {
 			Network.Name,
 			derivedKey.String(),
 			publicKey.String(),
-			derivedKeyY.String(),
-			derivedKeyZ.String(),
+			y_publicKey.String(),
+			z_publicKey.String(),
 			wif.String(),
 			hex.EncodeToString(ecPubKey.SerializeCompressed()),
 			p2pkhAddress.String(),
@@ -176,8 +177,8 @@ func derive(c *cli.Context) error {
 		final := &DerivedPublicKey{
 			Network.Name,
 			derivedKey.String(),
-			derivedKeyY.String(),
-			derivedKeyZ.String(),
+			y_publicKey.String(),
+			z_publicKey.String(),
 			hex.EncodeToString(ecPubKey.SerializeCompressed()),
 			p2pkhAddress.String(),
 			p2shAddress.String(),

@@ -41,6 +41,7 @@ func parsePath(path string) ([]uint32, error) {
 	return nums, nil
 }
 
+// NewKeyFromStringVersion modified from hdkeychain.NewKeyFromString
 func NewKeyFromStringVersion(version []byte, key string) (*hdkeychain.ExtendedKey, error) {
 	// The base58-decoded extended key must consist of a serialized payload
 	// plus an additional 4 bytes for the checksum.
