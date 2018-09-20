@@ -24,7 +24,7 @@ type Key struct {
 type DerivedPrivateKey struct {
 	Network         string
 	PrivateKey      string
-	PublicKey       string
+	PublicKeyP2PKH  string
 	PublicKeyP2SH   string
 	PublicKeyP2WPKH string
 	WIF             string
@@ -38,7 +38,7 @@ type DerivedPrivateKey struct {
 
 type DerivedPublicKey struct {
 	Network         string
-	PublicKey       string
+	PublicKeyP2PKH  string
 	PublicKeyP2SH   string
 	PublicKeyP2WPKH string
 	ECPubKey        string

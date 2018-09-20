@@ -80,12 +80,19 @@ func derive(c *cli.Context) error {
 		return cli.NewExitError(err.Error(), 1)
 	}
 
+	x_prefix := PREFIX_xpub
 	y_prefix := PREFIX_ypub
 	z_prefix := PREFIX_zpub
 
 	if Network.Name != "mainnet" {
+		x_prefix = PREFIX_tpub
 		y_prefix = PREFIX_upub
 		z_prefix = PREFIX_vpub
+	}
+
+	x_version, err := hex.DecodeString(x_prefix)
+	if err != nil {
+		return cli.NewExitError(err.Error(), 1)
 	}
 
 	y_version, err := hex.DecodeString(y_prefix)
@@ -94,6 +101,11 @@ func derive(c *cli.Context) error {
 	}
 
 	z_version, err := hex.DecodeString(z_prefix)
+	if err != nil {
+		return cli.NewExitError(err.Error(), 1)
+	}
+
+	x_publicKey, err := NewKeyFromStringVersion(x_version, publicKey.String())
 	if err != nil {
 		return cli.NewExitError(err.Error(), 1)
 	}
@@ -155,7 +167,7 @@ func derive(c *cli.Context) error {
 		final := &DerivedPrivateKey{
 			Network.Name,
 			derivedKey.String(),
-			publicKey.String(),
+			x_publicKey.String(),
 			y_publicKey.String(),
 			z_publicKey.String(),
 			wif.String(),
@@ -176,7 +188,7 @@ func derive(c *cli.Context) error {
 
 		final := &DerivedPublicKey{
 			Network.Name,
-			derivedKey.String(),
+			x_publicKey.String(),
 			y_publicKey.String(),
 			z_publicKey.String(),
 			hex.EncodeToString(ecPubKey.SerializeCompressed()),
