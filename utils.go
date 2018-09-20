@@ -18,6 +18,10 @@ func parsePath(path string) ([]uint32, error) {
 	nums := make([]uint32, len(parts), len(parts))
 
 	for i, p := range parts {
+		if len(p) == 0 {
+			continue
+		}
+
 		harden := uint32(0)
 		lastChar := p[len(p)-1:]
 
