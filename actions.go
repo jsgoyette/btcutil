@@ -1,8 +1,11 @@
 package main
 
 import (
+	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
+	"hash"
+
 	"fmt"
 
 	// "github.com/spf13/viper"
@@ -12,6 +15,7 @@ import (
 	"github.com/btcsuite/btcd/txscript"
 	"github.com/btcsuite/btcutil"
 	"github.com/btcsuite/btcutil/hdkeychain"
+	"golang.org/x/crypto/ripemd160"
 )
 
 func keyFromSeed(c *cli.Context) error {
@@ -210,7 +214,14 @@ func derive(c *cli.Context) error {
 	return nil
 }
 
-func hash160(c *cli.Context) error {
+// btcsuite/btcutil/hash160.go
+// Calculate the hash of hasher over buf.
+func calcHash(buf []byte, hasher hash.Hash) []byte {
+	hasher.Write(buf)
+	return hasher.Sum(nil)
+}
+
+func calcRipemd160(c *cli.Context) error {
 
 	hexStr := c.String("hex")
 
@@ -223,9 +234,69 @@ func hash160(c *cli.Context) error {
 		return cli.NewExitError(err.Error(), 1)
 	}
 
-	hash := btcutil.Hash160(decoded)
+	hashBytes := calcHash(decoded, ripemd160.New())
 
-	fmt.Printf("%s\n", hex.EncodeToString(hash))
+	fmt.Printf("%s\n", hex.EncodeToString(hashBytes))
+
+	return nil
+}
+
+func calcHash160(c *cli.Context) error {
+
+	hexStr := c.String("hex")
+
+	if hexStr == "" {
+		return cli.NewExitError("No hex string provided", 1)
+	}
+
+	decoded, err := hex.DecodeString(hexStr)
+	if err != nil {
+		return cli.NewExitError(err.Error(), 1)
+	}
+
+	hashBytes := calcHash(calcHash(decoded, sha256.New()), ripemd160.New())
+
+	fmt.Printf("%s\n", hex.EncodeToString(hashBytes))
+
+	return nil
+}
+
+func calcHash256(c *cli.Context) error {
+
+	hexStr := c.String("hex")
+
+	if hexStr == "" {
+		return cli.NewExitError("No hex string provided", 1)
+	}
+
+	decoded, err := hex.DecodeString(hexStr)
+	if err != nil {
+		return cli.NewExitError(err.Error(), 1)
+	}
+
+	hashBytes := calcHash(calcHash(decoded, sha256.New()), sha256.New())
+
+	fmt.Printf("%s\n", hex.EncodeToString(hashBytes))
+
+	return nil
+}
+
+func calcSha256(c *cli.Context) error {
+
+	hexStr := c.String("hex")
+
+	if hexStr == "" {
+		return cli.NewExitError("No hex string provided", 1)
+	}
+
+	decoded, err := hex.DecodeString(hexStr)
+	if err != nil {
+		return cli.NewExitError(err.Error(), 1)
+	}
+
+	hashBytes := calcHash(decoded, sha256.New())
+
+	fmt.Printf("%s\n", hex.EncodeToString(hashBytes))
 
 	return nil
 }
