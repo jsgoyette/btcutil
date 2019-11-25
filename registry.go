@@ -22,7 +22,7 @@ var (
 	}
 	pathFlag = cli.StringFlag{
 		Name:  "path, p",
-		Value: "0",
+		Value: ".",
 		Usage: "Derivation path string",
 	}
 	passPhraseFlag = cli.StringFlag{

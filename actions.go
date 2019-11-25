@@ -65,17 +65,19 @@ func derive(c *cli.Context) error {
 		return cli.NewExitError(err.Error(), 1)
 	}
 
-	parsedPath, err := parsePath(path)
-	if err != nil {
-		return cli.NewExitError(err.Error(), 1)
-	}
-
 	derivedKey := masterKey
 
-	for _, p := range parsedPath {
-		derivedKey, err = derivedKey.Child(p)
+	if path != "." && path != "m" {
+		parsedPath, err := parsePath(path)
 		if err != nil {
 			return cli.NewExitError(err.Error(), 1)
+		}
+
+		for _, p := range parsedPath {
+			derivedKey, err = derivedKey.Child(p)
+			if err != nil {
+				return cli.NewExitError(err.Error(), 1)
+			}
 		}
 	}
 
